@@ -1,0 +1,169 @@
+def choice_of_control(x):
+    print("Note:Irrespective of your choice, you will move first")
+    while True:
+        x=input("Enter your choice of knots or crosses by entering the initial letter of each using caps")
+        if x in ['X','O']:
+            return x
+        else:
+            print("invalid input")
+            
+def game_outline(board=[' ',' ',' ',' ',' ',' ',' ',' ',' ']):
+    for i in range(0,len(board)):
+        if(i in [3,6,9]):
+            print()
+            print()
+        if(i in [2,5,8]):
+            print(board[i], end="")
+        else:
+            print(board[i]+' | ', end="")
+
+def human_move(l=[' ',' ','O',' ',' ',' ',' ',' ',' '],choice='X'):
+    move=''
+    while True:
+        move=int(input("Enter a number between 1 to 9 to make your move.Putting in an already used position will be invalid."))
+        if l[move-1]==' ':
+            l[move-1]=choice
+            break
+        else:
+            print("Invalid Input.Re-enter")
+    return l
+
+def rem_moves(board):
+    for i in board:
+        if i==' ':#checks for blank spaces on the board to ensure the game hasn't ended
+            return True
+    return False
+
+def check_final_state(board=[' ',' ',' ',' ',' ',' ',' ',' ',' '],choice='X',choice2='O'):
+    if ((board[0] == board[1]) and (board[0] == board[2])):
+        if(board[0] == choice):
+            return 1
+        else: 
+            if(board[0]==choice2):
+                return -1
+            
+    if ((board[3] == board[4]) and (board[3] == board[5])):
+        if(board[3] == choice):
+            return 1
+        else: 
+            if(board[3]==choice2) :
+                return -1    
+    if ((board[6] == board[7]) and (board[6] == board[8])):
+        if(board[6] == choice):
+            return 1
+        else: 
+            if(board[6]==choice2):
+                return -1
+            
+    if ((board[0] == board[3]) and (board[0] == board[6])):
+        if(board[0] == choice):
+            return 1
+        else: 
+            if(board[0]==choice2):
+                return -1
+    
+    if ((board[1] == board[4]) and (board[1] == board[7])):
+        if(board[1] == choice):
+            return 1
+        else: 
+            if(board[1]==choice2):
+                return -1
+    
+    if ((board[2] == board[5]) and (board[2] == board[8])):
+        if(board[2] == choice):
+            return 1
+        else: 
+            if(board[2]==choice2):
+                return -1
+    
+    if ((board[0] == board[4]) and (board[0] == board[8])):
+        if(board[0] == choice):
+            return 1
+        else: 
+            if(board[0]==choice2):
+                return -1
+    
+    if ((board[2] == board[4]) and (board[2] == board[7])):
+        if(board[2] == choice):
+            return 1
+        else:
+            if(board[2]==choice2):
+                return -1
+    return 0
+
+def ai_Move(board, depth=0, maxTurn=True):
+    score = check_final_state(board)#checks for the value,if in terminal state
+    if score is 1 or score is (-1):
+        return score
+    if score is 0 and rem_moves(board) is False:
+        return score
+
+    if maxTurn is True:
+        best = -(10)
+        for i in range(0,9):
+            if board[i] == ' ':
+                board[i] = 'X'
+                value = ai_Move(board, depth + 1, not (maxTurn))
+                best = max(best, value)
+                board[i] = ' '
+        return best
+    else:
+        best = 10
+        for i in range(0,9):
+            if i == ' ':
+                board[i] = 'O'
+                value = ai_Move(board, depth + 1, not (maxTurn))
+                best = min(best, value)
+                board[i] = ' '
+        return best
+
+
+def the_Next_Move(board=['X', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '], choice='X', choice1='O'):
+    val = -1000
+    index = -1
+    for i in board:
+        if i == ' ':  # assuming ai is the minimizer and player the maximizer
+            i = choice1
+            newVal = ai_Move(board, 0, False)
+            print(newVal)
+            i = ' '
+            if newVal > val:
+                index = board.index(i)
+    print(str(index))
+    return index
+
+
+def game_mech():
+    final_val = 10  # some val other than 1,0,-1
+    board = [' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ']#to print the board
+    game_outline(board)
+    choice = choice_of_control(board)#human control
+    choice1 = ''#computer control
+    if choice == 'X':
+        choice1 = 'O'
+    else:
+        choice1 = 'X'
+    while True:
+        if rem_moves(board) is True:
+            human_move(board, choice)
+            game_outline(board)
+            index = the_Next_Move(board, choice, choice1)
+            board[index] = choice1
+            game_outline(board)
+            final_val=check_final_state(board,choice,choice1)#stores the 1 -1 0 depending on the result of the game
+            if final_val is 1 or final_val is -1:#checks if there is a winner
+                break
+        else:
+            final_val = check_final_state(board, choice, choice1)
+            break
+    if final_val == 1:
+        print("You won!!")
+    elif final_val == (-1):
+        print("You Lose")
+    else:
+        print("DRAW!!")
+
+
+def main():
+    print(game_mech())
+main()
