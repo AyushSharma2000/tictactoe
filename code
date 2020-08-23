@@ -125,7 +125,6 @@ def the_Next_Move(board=['X', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '], choice='X
         if i == ' ':  # assuming ai is the minimizer and player the maximizer
             i = choice1
             newVal = ai_Move(board, 0, False)
-            print(newVal)
             i = ' '
             if newVal > val:
                 index = board.index(i)
